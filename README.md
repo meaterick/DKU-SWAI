@@ -5,9 +5,9 @@
 - 과제 공지 원문 정리: [`docs/assignment.md`](docs/assignment.md)
 - 데이터 출처 및 참고 문헌: [`docs/references.md`](docs/references.md)
 
-## 팀 구성
+## 팀 구성 — 4조
 
-> 우리 팀은 예외적으로 **3인 1조**입니다. (공지 기준은 4인 1조)
+> 우리 팀(**4조**)은 예외적으로 **3인 1조**입니다. (공지 기준은 4인 1조)
 
 | 구분 | 이름 | 소속 | 담당 역할 |
 | --- | --- | --- | --- |
@@ -30,6 +30,7 @@
     - [ ] 데이터 분석 및 시각화 (`pandas`, `matplotlib` 등)
     - [ ] 파일 처리 또는 경량 DB 연동 (CSV, JSON, `sqlite3` 등)
     - [ ] 대화형/시각적 인터페이스 (Streamlit, tkinter, turtle 등)
+- **파이썬 제출 형태**: 파이썬 **소스코드**(`.py` / `.ipynb`) 또는 **Streamlit** 앱
 
 ## 일정 및 배점
 
