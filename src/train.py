@@ -124,7 +124,7 @@ def train(data_path: Path, output_dir: Path, test_size: float = 0.2) -> dict:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--data", type=Path, default=Path("data/survey_lung_cancer.csv"))
+    parser.add_argument("--data", type=Path, default=Path("data/lung_cancer.csv"))
     parser.add_argument("--output-dir", type=Path, default=Path("artifacts"))
     parser.add_argument("--test-size", type=float, default=0.2)
     args = parser.parse_args()

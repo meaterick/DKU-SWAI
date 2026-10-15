@@ -6,7 +6,6 @@ venv/
 .ipynb_checkpoints/
 
 # 원본 데이터와 학습 결과
-data/*.csv
 artifacts/
 
 # Secrets
