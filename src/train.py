@@ -81,45 +81,62 @@ def load_survey(path: Path) -> tuple[pd.DataFrame, pd.Series, dict[str, int]]:
     return frame[FEATURES], y, counts
 
 
-def train(data_path: Path, output_dir: Path, test_size: float = 0.2) -> dict:
-    """Fit a baseline with training-only scaling and save evaluation artifacts."""
-    if not 0 < test_size < 1:
-        raise ValueError("test_size는 0과 1 사이여야 합니다.")
-    X, y, counts = load_survey(data_path)
-    X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=test_size, random_state=42, stratify=y
-    )
-    model = make_pipeline(
-        StandardScaler(),
-        LogisticRegression(max_iter=1000, class_weight="balanced", random_state=42),
-    )
-    model.fit(X_train, y_train)
-    predictions = model.predict(X_test)
-    probabilities = model.predict_proba(X_test)[:, 1]
+class LungCancerTrainer:
+    """Own the split, model fit, evaluation, and saved outputs for one run."""
 
-    metrics = {
-        "source": str(data_path),
-        "rows_after_deduplication": len(X),
-        "class_counts": counts,
-        "train_rows": len(X_train),
-        "test_rows": len(X_test),
-        "test_size": test_size,
-        "random_state": 42,
-        "accuracy": accuracy_score(y_test, predictions),
-        "precision_yes": precision_score(y_test, predictions, zero_division=0),
-        "recall_yes": recall_score(y_test, predictions, zero_division=0),
-        "f1_yes": f1_score(y_test, predictions, zero_division=0),
-        "roc_auc": roc_auc_score(y_test, probabilities),
-        "confusion_matrix_no_yes": confusion_matrix(
-            y_test, predictions, labels=[0, 1]
-        ).tolist(),
-    }
-    output_dir.mkdir(parents=True, exist_ok=True)
-    (output_dir / "metrics.json").write_text(
-        json.dumps(metrics, ensure_ascii=False, indent=2), encoding="utf-8"
-    )
-    joblib.dump({"model": model, "features": FEATURES}, output_dir / "model.joblib")
-    return metrics
+    def __init__(self, data_path: Path, output_dir: Path, test_size: float = 0.2):
+        if not 0 < test_size < 1:
+            raise ValueError("test_size는 0과 1 사이여야 합니다.")
+        self.data_path = data_path
+        self.output_dir = output_dir
+        self.test_size = test_size
+
+    def build_model(self):
+        """Keep scaling inside the pipeline so it fits only training rows."""
+        return make_pipeline(
+            StandardScaler(),
+            LogisticRegression(max_iter=1000, class_weight="balanced", random_state=42),
+        )
+
+    def run(self) -> dict:
+        """Fit a baseline and save the model and held-out evaluation metrics."""
+        X, y, counts = load_survey(self.data_path)
+        X_train, X_test, y_train, y_test = train_test_split(
+            X, y, test_size=self.test_size, random_state=42, stratify=y
+        )
+        model = self.build_model()
+        model.fit(X_train, y_train)
+        predictions = model.predict(X_test)
+        probabilities = model.predict_proba(X_test)[:, 1]
+
+        metrics = {
+            "source": str(self.data_path),
+            "rows_after_deduplication": len(X),
+            "class_counts": counts,
+            "train_rows": len(X_train),
+            "test_rows": len(X_test),
+            "test_size": self.test_size,
+            "random_state": 42,
+            "accuracy": accuracy_score(y_test, predictions),
+            "precision_yes": precision_score(y_test, predictions, zero_division=0),
+            "recall_yes": recall_score(y_test, predictions, zero_division=0),
+            "f1_yes": f1_score(y_test, predictions, zero_division=0),
+            "roc_auc": roc_auc_score(y_test, probabilities),
+            "confusion_matrix_no_yes": confusion_matrix(
+                y_test, predictions, labels=[0, 1]
+            ).tolist(),
+        }
+        self.output_dir.mkdir(parents=True, exist_ok=True)
+        (self.output_dir / "metrics.json").write_text(
+            json.dumps(metrics, ensure_ascii=False, indent=2), encoding="utf-8"
+        )
+        joblib.dump({"model": model, "features": FEATURES}, self.output_dir / "model.joblib")
+        return metrics
+
+
+def train(data_path: Path, output_dir: Path, test_size: float = 0.2) -> dict:
+    """Run the trainer through the existing function interface."""
+    return LungCancerTrainer(data_path, output_dir, test_size).run()
 
 
 def main() -> None:

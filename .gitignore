@@ -5,7 +5,7 @@ __pycache__/
 venv/
 .ipynb_checkpoints/
 
-# 원본 데이터와 학습 결과
+# 학습 결과
 artifacts/
 
 # Secrets

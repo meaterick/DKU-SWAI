@@ -41,8 +41,10 @@
 
 1. CSV의 필수 열과 값 범위를 확인하고 완전히 동일한 행을 제거
 2. 설문 응답을 숫자로 변환하고 정답 비율을 유지해 학습·평가 데이터를 80:20으로 split
-3. 학습 데이터로만 학습한 뒤, 클래스 불균형을 고려한 로지스틱 회귀 기준 모델을 학습
+3. 학습 데이터로만 스케일러를 적합한 뒤, 클래스 불균형을 고려한 로지스틱 회귀 기준 모델을 학습
 4. 평가 데이터에서 정확도, YES 클래스 정밀도·재현율·F1, ROC AUC, 혼동 행렬을 기록
+
+학습·평가·결과 저장 흐름은 `LungCancerTrainer` 클래스로 관리합니다.
 
 ## 데이터 준비
 
@@ -51,19 +53,33 @@
 - **기본 정보:** `GENDER` (`F`/`M`), `AGE` (1~120 사이 숫자)
 - **설문 항목:** `SMOKING`, `YELLOW_FINGERS`, `ANXIETY`, `PEER_PRESSURE`, `CHRONIC DISEASE`, `FATIGUE`, `ALLERGY`, `WHEEZING`, `ALCOHOL CONSUMING`, `COUGHING`, `SHORTNESS OF BREATH`, `SWALLOWING DIFFICULTY`, `CHEST PAIN` (각각 1=아니오, 2=예)
 
-Kaggle에서 설문 CSV를 직접 내려받아 `data/survey_lung_cancer.csv`로 저장합니다. 원본 파일명이 다르면 이름을 바꾸거나 실행 시 `--data`에 경로를 지정합니다. CSV는 Git에서 제외합니다. 다운로드 전에 Kaggle 페이지의 데이터 사용 조건을 확인하고, 실제 제출물에는 사용한 데이터셋 버전과 다운로드 날짜를 적습니다. 열 이름의 앞뒤 공백은 코드가 제거하지만, 다른 버전의 데이터라면 열과 인코딩을 먼저 확인해야 합니다.
+이 저장소에는 `data/lung_cancer.csv`가 포함되어 있어 별도 다운로드 없이 실행할 수 있습니다. 다른 버전의 설문 CSV를 사용하려면 Kaggle 페이지의 이용 조건을 확인해 내려받고, 실행 시 `--data`에 파일 경로를 지정합니다. 실제 제출물에는 사용한 데이터셋 버전과 다운로드 날짜를 적습니다. 열 이름의 앞뒤 공백은 코드가 제거하지만, 다른 버전의 데이터라면 열과 인코딩을 먼저 확인해야 합니다.
 
 ## 실행 방법
 
-```bash
+Git과 Python 3.10 이상을 설치한 뒤, 터미널에서 저장소를 클론합니다. 아래 명령은 현재 포함된 `data/lung_cancer.csv`를 사용합니다.
+
+### Windows PowerShell
+
+```powershell
+git clone https://github.com/meaterick/DKU-SWAI.git
+cd DKU-SWAI
 python -m venv .venv
-# Windows PowerShell: .venv\Scripts\Activate.ps1
-# macOS/Linux: source .venv/bin/activate
-python -m pip install -r requirements.txt
-python src/train.py --data data/lung_cancer.csv
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+.\.venv\Scripts\python.exe src\train.py
 ```
 
-`src/train.py`는 설문 CSV를 검증하고 학습·평가합니다. 실행 결과는 `artifacts/metrics.json`과 `artifacts/model.joblib`에 저장됩니다. 입력에 필수 열이 없거나 값 인코딩이 다르면 오류를 냅니다. 평가 점수는 한 번 분할한 테스트 데이터의 결과입니다.
+### macOS / Linux
+
+```bash
+git clone https://github.com/meaterick/DKU-SWAI.git
+cd DKU-SWAI
+python3 -m venv .venv
+.venv/bin/python -m pip install -r requirements.txt
+.venv/bin/python src/train.py
+```
+
+다른 CSV를 사용한다면 마지막 명령에 `--data 경로/파일.csv`를 추가합니다. `src/train.py`는 설문 CSV를 검증하고 학습·평가합니다. 실행 결과는 `artifacts/metrics.json`과 `artifacts/model.joblib`에 저장됩니다. 입력에 필수 열이 없거나 값 인코딩이 다르면 오류를 냅니다. 평가 점수는 한 번 분할한 테스트 데이터의 결과입니다.
 
 ## 저장소 구성 원칙
 
@@ -72,7 +88,7 @@ python src/train.py --data data/lung_cancer.csv
 ├── README.md          # 프로젝트·과제 안내와 참고 자료를 한곳에 정리
 ├── requirements.txt   # Python 의존성
 ├── src/train.py       # 기준 모델 학습·평가 코드
-├── data/              # 로컬 원본 CSV (Git에서 제외)
+├── data/lung_cancer.csv # 저장소에 포함된 설문 CSV
 ├── artifacts/         # 실행 시 생성되는 모델·평가 결과 (Git에서 제외)
 └── docs/              # 실제 제출용 기획서·보고서·발표 자료만 보관
 ```
