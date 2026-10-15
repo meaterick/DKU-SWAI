@@ -35,14 +35,14 @@
 
 **최종 ZIP 준비:** 발표 PPT 1부(연동 URL 포함), A4 2장 이내의 요약 보고서 1부(DOC/HWP/PDF 중 하나), 소스코드와 실행에 필요한 데이터·리소스 파일을 포함합니다. 시연 영상은 선택 사항입니다. 보고서에는 팀원별 실제 역할을, 모든 문서 말미에는 데이터 출처와 참고 문헌을 적습니다. 제출 전 다른 PC에서 ZIP을 풀어 실행을 확인합니다.
 
-발표 평가는 자료·프로그램 완성도 및 동작 4점, 코드 이해도·질의응답 4점, 전달력·협업 2점입니다. 팀원 모두 자신이 맡은 코드를 설명할 수 있도록 준비합니다.
+발표 평가는 자료·프로그램 완성도 및 동작 4점, 코드 이해도·질의응답 4점, 전달력·협업 2점입니다. 팀원 모두 자신이 맡은 코드를 설명할 수 있어야합니다.
 
 ## 현재 구현과 개발 계획
 
 1. CSV의 필수 열과 값 범위를 확인하고 완전히 동일한 행을 제거
 2. 설문 응답을 숫자로 변환하고 정답 비율을 유지해 학습·평가 데이터를 80:20으로 split
-3. 학습 데이터로만 학습한 뒤, 클래스 불균형을 고려한 로지스틱 회귀 기준 모델을 학습합니다.
-4. 평가 데이터에서 정확도, YES 클래스 정밀도·재현율·F1, ROC AUC, 혼동 행렬을 기록합니다.
+3. 학습 데이터로만 학습한 뒤, 클래스 불균형을 고려한 로지스틱 회귀 기준 모델을 학습
+4. 평가 데이터에서 정확도, YES 클래스 정밀도·재현율·F1, ROC AUC, 혼동 행렬을 기록
 
 ## 데이터 준비
 
@@ -60,7 +60,7 @@ python -m venv .venv
 # Windows PowerShell: .venv\Scripts\Activate.ps1
 # macOS/Linux: source .venv/bin/activate
 python -m pip install -r requirements.txt
-python src/train.py --data data/survey_lung_cancer.csv
+python src/train.py --data data/lung_cancer.csv
 ```
 
 `src/train.py`는 설문 CSV를 검증하고 학습·평가합니다. 실행 결과는 `artifacts/metrics.json`과 `artifacts/model.joblib`에 저장됩니다. 입력에 필수 열이 없거나 값 인코딩이 다르면 오류를 냅니다. 평가 점수는 한 번 분할한 테스트 데이터의 결과입니다.
@@ -77,7 +77,7 @@ python src/train.py --data data/survey_lung_cancer.csv
 └── docs/              # 실제 제출용 기획서·보고서·발표 자료만 보관
 ```
 
-현재 `docs/`에 실제 제출물이 없으므로 빈 폴더를 유지하기 위한 안내 파일을 두지 않습니다. 제출물이 준비되면 단계별 파일을 `docs/`에 추가합니다. README 같은 안내 문서는 `docs/`에 넣지 않습니다.
+현재 `docs/`에 실제 제출물이 없으므로 빈 폴더를 유지하기 위한 안내 파일을 두지 않습니다. 제출물이 준비되면 단계별 파일을 `docs/`에 추가합니다. 
 
 ## 참고 자료
 
