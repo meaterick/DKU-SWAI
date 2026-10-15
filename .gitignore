@@ -5,7 +5,11 @@ __pycache__/
 venv/
 .ipynb_checkpoints/
 
-# Secrets (API 키 등은 커밋하지 마세요)
+# 원본 데이터와 학습 결과
+data/*.csv
+artifacts/
+
+# Secrets
 .env
 secrets.toml
 
