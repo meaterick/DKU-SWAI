@@ -1,6 +1,6 @@
 # DKU-SWAI — Kaggle 폐암 설문 데이터 기반 분류 모델
 
-단국대학교 **SW·AI입문(SW) 2차 팀 프로젝트** Kaggle의 폐암 설문 데이터에 있는 Features을 이용해 `LUNG_CANCER`(YES/NO)를 분류하는 모델을 만들고 평가합니다.
+단국대학교 **SW·AI입문(SW) 2차과제 팀플** Kaggle의 폐암 설문 데이터에 있는 Features을 이용해 `LUNG_CANCER`(YES/NO)를 분류하는 모델을 학습시킵니다.
 
 ## 팀 구성 — 4조
 
@@ -10,7 +10,7 @@
 | 팀원 | 이서준 | 컴퓨터공학과 | 프로그램 구조 설계,발표 |
 | 팀원 | 유소현 | 컴퓨터공학과 | 자료 조사, PPT, 발표 |
 
-## 과제 요건
+## 과제 조건
 
 - **배점:** 총 20점.
 - **파이썬 기본 문법:** 자료형·자료구조(리스트·딕셔너리 등), 조건문(`if/elif/else`), 반복문(`for/while`), 함수와 클래스를 적용해야 합니다.
@@ -53,7 +53,7 @@
 - **기본 정보:** `GENDER` (`F`/`M`), `AGE` (1~120 사이 숫자)
 - **설문 항목:** `SMOKING`, `YELLOW_FINGERS`, `ANXIETY`, `PEER_PRESSURE`, `CHRONIC DISEASE`, `FATIGUE`, `ALLERGY`, `WHEEZING`, `ALCOHOL CONSUMING`, `COUGHING`, `SHORTNESS OF BREATH`, `SWALLOWING DIFFICULTY`, `CHEST PAIN` (각각 1=아니오, 2=예)
 
-이 저장소에는 `data/lung_cancer.csv`가 포함되어 있어 별도 다운로드 없이 실행할 수 있습니다. 다른 버전의 설문 CSV를 사용하려면 Kaggle 페이지의 이용 조건을 확인해 내려받고, 실행 시 `--data`에 파일 경로를 지정합니다. 실제 제출물에는 사용한 데이터셋 버전과 다운로드 날짜를 적습니다. 열 이름의 앞뒤 공백은 코드가 제거하지만, 다른 버전의 데이터라면 열과 인코딩을 먼저 확인해야 합니다.
+이 저장소에는 `data/lung_cancer.csv`가 포함되어 있어 별도 다운로드 없이 실행할 수 있습니다.
 
 ## 실행 방법
 
@@ -79,7 +79,7 @@ python3 -m venv .venv
 .venv/bin/python src/train.py
 ```
 
-다른 CSV를 사용한다면 마지막 명령에 `--data 경로/파일.csv`를 추가합니다. `src/train.py`는 설문 CSV를 검증하고 학습·평가합니다. 실행 결과는 `artifacts/metrics.json`과 `artifacts/model.joblib`에 저장됩니다. 입력에 필수 열이 없거나 값 인코딩이 다르면 오류를 냅니다. 평가 점수는 한 번 분할한 테스트 데이터의 결과입니다.
+`src/train.py`는 설문 CSV를 검증하고 학습·평가합니다. 실행 결과는 `artifacts/metrics.json`과 `artifacts/model.joblib`에 저장됩니다.
 
 ## 저장소 구성 원칙
 
@@ -92,8 +92,6 @@ python3 -m venv .venv
 ├── artifacts/         # 실행 시 생성되는 모델·평가 결과 (Git에서 제외)
 └── docs/              # 실제 제출용 기획서·보고서·발표 자료만 보관
 ```
-
-현재 `docs/`에 실제 제출물이 없으므로 빈 폴더를 유지하기 위한 안내 파일을 두지 않습니다. 제출물이 준비되면 단계별 파일을 `docs/`에 추가합니다. 
 
 ## 참고 자료
 
