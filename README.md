@@ -71,22 +71,33 @@
 | 코드 구현 이해도 및 질의응답 | 4점 |
 | 발표 전달력 및 협업 | 2점 |
 
-### 현재 2차 준비물
+### 3단계 최종 제출물 (`docs/final/`)
 
-- 요약서: `docs/DKU-SWAI_모델보고서.docx`
-- 초안 PPT: `docs/DKU-SWAI_발표자료.pptx`
-- 소스코드 일부: `src/train.py`, `src/train_explained.py`
+- 발표 자료: `docs/final/DKU-SWAI_4조_최종발표.pptx` (저장소 URL 연동)
+- 프로젝트 요약 보고서: `docs/final/DKU-SWAI_4조_최종보고서.pdf` (A4 2장, 원본 `.docx` 함께 보관)
+- 소스코드 ZIP: `src/`, `tests/`, `data/`, `requirements.txt`, `README.md`
+- 2차 중간 진척 자료: `docs/DKU-SWAI_모델보고서.docx`, `docs/DKU-SWAI_발표자료.pptx`
 
-`DKU-SWAI_모델보고서.docx`는 2차 중간 진척용입니다. 3단계 최종 보고서는 A4 2장 이내로 별도 작성해야 합니다.
+## 구현 개요 (기능 6/6 완료)
 
-## 구현 개요
+| 기능 | 파일 | 담당 |
+| --- | --- | --- |
+| 1. 데이터 입력·검증 | `src/train.py` `load_survey` | 이서준 |
+| 2. 전처리·파생 변수 | `src/train.py` `add_symptom_count` | 이서준 |
+| 3. 모델 선택·학습 (5-fold CV, 후보 4개) | `src/train.py` `LungCancerTrainer` | 박인찬 |
+| 4. 평가·저장 (JSON, joblib) | `src/train.py` `evaluate_model`, `run` | 유소현 · 박인찬 |
+| 5. 결과 시각화 (PNG 7종) | `src/visualize.py` `ResultVisualizer` | 유소현 |
+| 6. 사용자 예측 (CSV · 대화형 · GUI) | `src/predict.py` `SurveyPredictor`, `src/gui.py` | 이서준 |
+| + 임계값 점검 · 통합 테스트 | `src/threshold_check.py`, `tests/test_pipeline.py` | 박인찬 |
 
 1. CSV의 필수 열과 값 범위를 확인하고 완전히 동일한 행을 제거
 2. 설문 응답을 숫자로 변환하고 정답 비율을 유지해 학습·평가 데이터를 80:20으로 split
 3. 학습 데이터에만 스케일러를 적합한 뒤, 증상 수 파생 변수를 추가하고 5-fold 계층 교차검증으로 후보 4개를 비교해 Gradient Boosting을 선택
 4. 평가 데이터에서 정확도, YES 클래스 정밀도·재현율·F1, ROC AUC, 혼동 행렬을 기록
+5. 혼동 행렬·ROC 곡선·특성 중요도·후보 비교·임계값 그래프를 `artifacts/figures/`에 PNG로 저장
+6. 학습된 모델로 새 설문을 CSV 일괄 / 터미널 대화형 / tkinter GUI로 예측
 
-학습·평가·결과 저장 흐름은 `LungCancerTrainer` 클래스가 관리합니다.
+학습·평가·결과 저장 흐름은 `LungCancerTrainer`, 시각화는 `ResultVisualizer`, 예측은 `SurveyPredictor` 클래스가 관리합니다.
 
 ## 역할별 코드 안내
 
@@ -142,17 +153,34 @@ python3 -m venv .venv
 
 `src/train.py`는 설문 CSV를 검증하고 후보 4개를 비교한 뒤 선택 모델을 학습·평가합니다. 실행 결과는 `artifacts/metrics.json`과 `artifacts/model.joblib`에 저장됩니다. `src/train_explained.py`는 같은 로직에 함수별 설명과 주석을 붙인 복사본이며, `python src/train_explained.py`로 실행할 수 있고 결과도 동일합니다.
 
+### 학습 후 이어서 실행 (저장소 폴더에서, `python`은 가상환경 Python)
+
+```powershell
+python src\threshold_check.py                         # 임계값별 정밀도·재현율 → artifacts/threshold_report.json
+python src\visualize.py                               # 그래프 7종 → artifacts/figures/*.png
+python src\predict.py --input data\sample_input.csv   # CSV 일괄 예측 → artifacts/predictions.csv
+python src\predict.py --interactive                   # 터미널에서 15문항 직접 입력
+python src\gui.py                                     # tkinter GUI 예측 창
+python -m unittest discover -s tests -v               # 통합 테스트 9개
+```
+
 ## 저장소 구성 원칙
 
 ```text
 .
-├── README.md          # 프로젝트 소개·과제 안내·참고 자료
-├── requirements.txt   # Python 의존성
-├── src/train.py       # 실행용 코드 (주석 없음)
-├── src/train_explained.py # 같은 로직에 함수별 설명·주석 포함
-├── data/lung_cancer.csv # 저장소에 포함된 설문 CSV
-├── artifacts/         # 실행 시 생성되는 모델·평가 결과 (Git에서 제외)
-└── docs/              # 보고서·발표 자료·역할별 코드 설명
+├── README.md                 # 프로젝트 소개·과제 안내·참고 자료
+├── requirements.txt          # Python 의존성
+├── src/train.py              # 검증·전처리·모델 선택·평가·저장 (주석 없음)
+├── src/train_explained.py    # 같은 로직에 함수별 설명·주석 포함
+├── src/threshold_check.py    # 판정 임계값 점검 (박인찬)
+├── src/visualize.py          # 결과 시각화 PNG (유소현)
+├── src/predict.py            # CSV·대화형 예측 (이서준)
+├── src/gui.py                # tkinter 예측 GUI (이서준)
+├── tests/test_pipeline.py    # 단위·통합 테스트 (박인찬)
+├── data/lung_cancer.csv      # 저장소에 포함된 설문 CSV
+├── data/sample_input.csv     # 예측 데모용 입력 5건
+├── artifacts/                # 실행 시 생성되는 모델·평가 결과 (Git에서 제외)
+└── docs/                     # 보고서·발표 자료·역할별 코드 설명 (최종본은 docs/final/)
 ```
 
 ## 참고 자료
@@ -160,3 +188,4 @@ python3 -m venv .venv
 - 데이터: [Kaggle Lung Cancer 설문 데이터](https://www.kaggle.com/datasets/mysarahmadbhat/lung-cancer)
 - 개발: [Python 공식 문서](https://docs.python.org/3/), [pandas 문서](https://pandas.pydata.org/docs/), [scikit-learn 문서](https://scikit-learn.org/stable/)
 - 모델 선택: [scikit-learn Model selection](https://scikit-learn.org/stable/model_selection.html), [GradientBoostingClassifier](https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.GradientBoostingClassifier.html)
+- 시각화·인터페이스: [matplotlib 문서](https://matplotlib.org/stable/), [tkinter 문서](https://docs.python.org/3/library/tkinter.html), [unittest 문서](https://docs.python.org/3/library/unittest.html)
